@@ -1,0 +1,45 @@
+function p = setParamEst
+
+p.a1                   = 0.08277;
+p.a2                   = 0.6081;
+p.a3                   = 0.03318;
+p.a4                   = 0.3554;
+p.a5                   = 0.06461;
+p.a6                   = 0.6;
+p.b1                   = 0.4033;
+p.b2                   = 0.1243;
+p.b3                   = 0.3507;
+p.b4                   = 0.4607;
+p.b5                   = 0.03061;
+p.b21                  = 0.4;
+p.b22                  = 0.05;
+p.ss_dl_cpi_ncore      = 4 ;
+p.w_core               = 0.608;
+p.c1                   = 0.7;
+p.c2                   = 1.5;
+p.c3                   = 0 ;
+p.rho_dl_cpi_tar       = 0.9;
+p.ss_dl_cpi_tar        = 4 ;
+p.rho_r_tnd            = 0.9;
+p.e1                   = 0.8;
+p.e2                   = 0.3;
+p.f1                   = 0.2;
+p.f2                   = 0.5;
+p.rho_g_y_tnd          = 0.99;
+p.ss_dl_y_tnd          = 2 ;
+p.rho_dl_z_tnd         = 0.9;
+p.ss_dl_z_tnd          = 2 ;
+p.rho_prem             = 0.7;
+p.ss_prem              = 2 ;
+p.rho_dl_s_tar         = 0.9;
+p.rho_str_def          = 0.9;
+p.ss_str_def           = 3 ;
+p.rho_dl_cpi_f         = 0.41;
+p.ss_dl_cpi_f          = 2 ;
+p.rho_i_f              = 0.76;
+p.rho_r_f_tnd          = 0.97;
+p.ss_r_f_tnd           = 1 ;
+p.rho_l_y_f_gap        = 0.9;
+p.rho_l_rp_oil_gap     = 0.74;
+
+end

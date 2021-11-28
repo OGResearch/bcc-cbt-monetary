@@ -1,0 +1,36 @@
+
+!transition_variables
+
+l_y
+l_y_gap
+l_y_tnd
+dl_y_tnd
+
+!parameters
+
+rho_gap
+rho_tnd
+ss_dl_y_tnd
+
+!transition_shocks
+
+shock_l_y_gap
+shock_dl_y_tnd
+
+!transition_equations
+
+l_y = l_y_gap + l_y_tnd;
+
+l_y_gap = rho_gap * l_y_gap{-1} + shock_l_y_gap;
+
+dl_y_tnd = rho_tnd * dl_y_tnd{-1} + (1 - rho_tnd) * ss_dl_y_tnd + shock_dl_y_tnd;
+
+dl_y_tnd = 4*(l_y_tnd - l_y_tnd{-1});
+
+!measurement_variables
+
+obs_l_y
+
+!measurement_equations
+
+l_y = obs_l_y;

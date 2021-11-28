@@ -1,0 +1,67 @@
+
+!variables
+
+r, wr
+c, iv
+k, l, y
+A
+
+!parameters
+
+beta
+sigma
+phi
+delta
+alpha
+
+rho_A
+
+cy, ivy
+
+!shocks
+
+shock_A
+
+!if nonlinear
+
+  !log_variables
+  !all_but
+  !equations
+
+  c^-sigma = beta * c{+1}^-sigma * r;
+
+  l^phi = c^-sigma * wr;
+
+  r = alpha * y{+1}/k + 1 - delta;
+
+  wr = (1 - alpha) * y/l;
+
+  y = c + iv;
+
+  k = (1 - delta) *k{-1} + iv;
+
+  y = A * k{-1}^alpha * l^(1 - alpha);
+  
+  log(A) = (1 - rho_A) * log(A{-1}) + shock_A;
+
+!else
+
+  !equations
+
+  c = c{+1} - 1/sigma * r;
+
+  phi * l = -sigma * c + wr;
+
+  r = (1 - beta * (1 - delta)) * (y{+1} - k);
+
+  wr = y - l;
+
+  y = cy * c + ivy * iv;
+
+  k = (1 - delta) * k{-1} + delta * iv;
+
+  y = A + alpha * k{-1} + (1 - alpha) * l;
+  
+  A = (1 - rho_A) * A{-1} + shock_A;
+
+!end

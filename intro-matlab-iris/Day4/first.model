@@ -1,0 +1,20 @@
+
+!variables
+
+y
+
+!equations
+
+y = c + rho * y{-1} + eps;
+
+!parameters
+
+c
+
+!shocks
+
+eps
+
+!parameters
+
+rho

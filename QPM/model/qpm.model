@@ -1,0 +1,315 @@
+
+!transition_variables
+
+l_y
+l_y_gap
+e_l_y_gap
+dl_y_tnd
+g_y_tnd
+e_dl_y_tnd
+l_y_tnd
+
+l_cpi
+dl_cpi
+e_dl_cpi
+
+l_cpi_core
+dl_cpi_core
+e_dl_cpi_core
+rmc_core
+
+l_cpi_ncore
+dl_cpi_ncore
+
+r
+r_gap
+i
+r_tnd
+i_tnd
+
+l_s
+dl_s
+e_l_s
+l_z
+l_z_gap
+dl_z_tnd
+e_dl_z_tnd
+l_z_tnd
+
+dl_s_tar
+dl_cpi_tar
+
+prem
+
+def
+str_def
+cyc_def
+fisc_impulse
+
+dl_cpi_f
+l_cpi_f
+i_f
+r_f_tnd
+l_y_f_gap
+l_rp_oil_gap
+
+!parameters
+
+a1, a2, a3, a4, a5, a6
+
+b1, b2, b3, b4, b5
+
+b21, b22
+ss_dl_cpi_ncore
+
+w_core
+
+c1, c2, c3
+rho_dl_cpi_tar
+ss_dl_cpi_tar
+rho_r_tnd
+
+e1, e2
+
+f1, f2
+
+rho_g_y_tnd
+ss_dl_y_tnd
+
+rho_dl_z_tnd
+ss_dl_z_tnd
+
+rho_prem
+ss_prem
+
+rho_dl_s_tar
+
+rho_str_def
+ss_str_def
+
+rho_dl_cpi_f
+ss_dl_cpi_f
+
+rho_i_f
+
+rho_r_f_tnd
+ss_r_f_tnd
+
+rho_l_y_f_gap
+
+rho_l_rp_oil_gap
+
+!transition_shocks
+
+shock_l_y_gap
+shock_dl_cpi_core
+shock_dl_cpi_ncore
+shock_i
+shock_l_s
+shock_def
+
+shock_g_y_tnd
+shock_l_y_tnd
+shock_dl_z_tnd
+shock_prem
+shock_dl_s_tar
+shock_dl_cpi_tar
+shock_r_tnd
+shock_str_def
+
+shock_dl_cpi_f
+shock_i_f
+shock_r_f_tnd
+shock_l_y_f_gap
+shock_l_rp_oil_gap
+
+!transition_equations
+
+% Output gap
+
+l_y_gap = ...
+  + a1  * e_l_y_gap ...
+  + a2  * l_y_gap{-1} ...
+  - a3  * r_gap ...
+  + a4  * l_y_f_gap ...
+  + a5  * l_z_gap ...
+  + a6  * fisc_impulse ...
+  + shock_l_y_gap;
+
+e_l_y_gap = l_y_gap{+1};
+
+% Core inflation
+
+dl_cpi_core = ...
+  + b1 * e_dl_cpi_core ...
+  + (1 - b1 - b2) * dl_cpi_core{-1} ...
+  + b2 * (dl_cpi_f + dl_s - dl_z_tnd) ...
+  + b3 * rmc_core ...
+  + b5 * (l_z_gap + l_rp_oil_gap) ...
+  + shock_dl_cpi_core;
+
+rmc_core = (1 - b4) * l_y_gap + b4 * l_z_gap;
+
+e_dl_cpi_core = dl_cpi_core{+1};
+
+% Non-core inflation
+
+dl_cpi_ncore = ...
+  + b21 * dl_cpi_ncore{-1} ...
+  + (1 - b21) * ss_dl_cpi_ncore ...
+  + b22 * (l_z_gap + l_rp_oil_gap) ...
+  + shock_dl_cpi_ncore;
+
+% Headline CPI
+
+l_cpi = w_core * l_cpi_core + (1 - w_core) * l_cpi_ncore;
+
+e_dl_cpi = dl_cpi{+1};
+
+% Interest rate
+
+i = ...
+  + c1 * i{-1} ...
+  + (1 - c1) * (i_tnd + c2 * (dl_cpi_core{+1} - dl_cpi_tar) + c3 * l_y_gap) ...
+  + shock_i;
+
+i_tnd = r_tnd + dl_cpi_tar;
+
+r = i - dl_cpi{+1};
+
+dl_cpi_tar = rho_dl_cpi_tar * dl_cpi_tar{-1} + (1 - rho_dl_cpi_tar) * ss_dl_cpi_tar ...
+  + shock_dl_cpi_tar;
+
+r_tnd = rho_r_tnd * r_tnd{-1} + (1 - rho_r_tnd) * (r_f_tnd + e_dl_z_tnd + prem) ...
+  + shock_r_tnd;
+
+% Exchange rate
+
+l_s = ...
+  + (1 - e2) * (e_l_s - (i - (i_f + prem))/4) ...
+  + e2 * (l_s{-1} + dl_s_tar/4) ...
+  + shock_l_s;
+
+e_l_s = ...
+   + e1 * l_s{+1} ...
+   + (1 - e1) * (l_s{-1} + 2/4*(dl_z_tnd + dl_cpi_tar - ss_dl_cpi_f));
+ 
+dl_s_tar = ...
+  + rho_dl_s_tar * dl_s_tar{-1} ...
+  + (1 - rho_dl_s_tar) * (ss_dl_z_tnd + dl_cpi_tar - ss_dl_cpi_f) ...
+  + shock_dl_s_tar;
+
+l_z = l_s + l_cpi_f - l_cpi;
+
+% Fiscal
+
+def = str_def + cyc_def + shock_def;
+
+str_def = rho_str_def * str_def{-1} + (1 - rho_str_def) * ss_str_def ...
+  + shock_str_def;
+
+cyc_def = -f1 * l_y_gap;
+
+fisc_impulse = f2 * shock_def + (1 - f2) * (str_def - str_def{-1});
+
+% Trends/gaps
+
+l_y = l_y_gap + l_y_tnd;
+
+l_z = l_z_gap + l_z_tnd;
+
+r = r_gap + r_tnd;
+
+% Trend growth rates
+
+g_y_tnd = rho_g_y_tnd * g_y_tnd{-1} + (1 - rho_g_y_tnd) * ss_dl_y_tnd + shock_g_y_tnd;
+
+l_y_tnd = l_y_tnd{-1} + g_y_tnd/4 + shock_l_y_tnd;
+
+e_dl_y_tnd = dl_y_tnd{+1};
+
+dl_z_tnd = rho_dl_z_tnd * dl_z_tnd{-1} + (1 - rho_dl_z_tnd) * ss_dl_z_tnd + shock_dl_z_tnd;
+
+e_dl_z_tnd = dl_z_tnd{+1};
+
+prem = rho_prem * prem{-1} + (1 - rho_prem) * ss_prem + shock_prem;
+
+% Foreign variables
+
+dl_cpi_f = rho_dl_cpi_f * dl_cpi_f{-1} + (1 - rho_dl_cpi_f) * ss_dl_cpi_f + shock_dl_cpi_f;
+
+i_f = rho_i_f * i_f{-1} + (1 - rho_i_f) * (r_f_tnd + dl_cpi_f) + shock_i_f;
+
+r_f_tnd = rho_r_f_tnd * r_f_tnd{-1} + (1 - rho_r_f_tnd) * ss_r_f_tnd + shock_r_f_tnd;
+
+l_y_f_gap = rho_l_y_f_gap * l_y_f_gap{-1} + shock_l_y_f_gap;
+
+l_rp_oil_gap = rho_l_rp_oil_gap * l_rp_oil_gap{-1} + shock_l_rp_oil_gap;
+
+% Growth rates
+
+dl_cpi        = 4*(l_cpi        - l_cpi{-1});
+dl_cpi_core   = 4*(l_cpi_core   - l_cpi_core{-1});
+dl_cpi_ncore  = 4*(l_cpi_ncore  - l_cpi_ncore{-1});
+dl_cpi_f      = 4*(l_cpi_f      - l_cpi_f{-1});
+dl_y_tnd      = 4*(l_y_tnd      - l_y_tnd{-1});
+dl_z_tnd      = 4*(l_z_tnd      - l_z_tnd{-1});
+dl_s          = 4*(l_s          - l_s{-1});
+
+% Auxiliary variables to tune shocks
+
+!transition_variables
+
+aux_shock_l_y_tnd
+
+!transition_equations
+
+aux_shock_l_y_tnd = shock_l_y_tnd;
+
+!measurement_variables
+
+obs_l_y
+obs_l_cpi_core
+obs_l_cpi_ncore
+obs_i
+obs_l_s
+obs_def
+
+obs_l_y_gap
+obs_l_z_gap
+
+obs_shock_l_y_tnd
+
+obs_r_tnd
+obs_l_z_tnd
+obs_dl_cpi_tar
+
+obs_l_cpi_f
+obs_l_y_f_gap
+obs_i_f
+obs_r_f_tnd
+obs_l_rp_oil_gap
+
+!measurement_equations
+
+l_y           = obs_l_y;
+l_cpi_core    = obs_l_cpi_core;
+l_cpi_ncore   = obs_l_cpi_ncore;
+i             = obs_i;
+l_s           = obs_l_s;
+def           = obs_def;
+
+l_y_gap = obs_l_y_gap;
+l_z_gap = obs_l_z_gap;
+
+aux_shock_l_y_tnd = obs_shock_l_y_tnd;
+
+r_tnd       = obs_r_tnd;
+l_z_tnd     = obs_l_z_tnd;
+dl_cpi_tar  = obs_dl_cpi_tar;
+
+l_cpi_f       = obs_l_cpi_f;
+l_y_f_gap     = obs_l_y_f_gap;
+i_f           = obs_i_f;
+r_f_tnd       = obs_r_f_tnd;
+l_rp_oil_gap  = obs_l_rp_oil_gap;
