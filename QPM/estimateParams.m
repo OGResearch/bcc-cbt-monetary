@@ -7,23 +7,26 @@ opts = mainSettings();
 rngEst    = opts.estim.rngEst;
 spec      = opts.estim.spec;
 dbMult    = opts.filter.dbMult;
+dbTunes   = opts.filter.dbTunes;
 numParam  = length(fieldnames(spec));
 numDraws  = opts.estim.numDraws;
 plotPost  = opts.estim.plotPost;
 
 % Load the model
-
 tmp = load("results/model.mat");
 m   = tmp.m(1); % Always start from the baseline parametrization
 
 % Load the data
+tmp     = load("results/data.mat");
+dbObs   = tmp.dbObs;
 
-tmp = load("results/data.mat");
-db   = tmp.dbObs;
+% Add tunes
+dbObs = databank.merge("vertcat", dbObs, dbTunes, "missingField", Series());
 
 % Find porsterior mode
-[summary, pos, ~, ~, mest] = estimate(m, db, rngEst, spec, ...
-  "filter", {"Multiply", dbMult});
+[summary, pos, ~, ~, mest] = estimate(m, dbObs, rngEst, spec, ...
+  "filter", {"Multiply", dbMult}, ...
+  "NoSolution", "Penalty");
 
 display(summary)
 

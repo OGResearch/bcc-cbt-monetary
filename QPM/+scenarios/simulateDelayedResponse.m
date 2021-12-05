@@ -1,4 +1,8 @@
-function dbComp = simulateDelayedResponse(m)
+function dbComp = simulateDelayedResponse
+
+% Load the model
+tmp = load("results/model.mat");
+m   = tmp.m(1); % Use the baseline model
 
 rngSim = 0:40;
 

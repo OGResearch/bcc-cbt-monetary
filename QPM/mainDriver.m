@@ -1,34 +1,34 @@
 
-% Setup
+%% Setup
 
 clear, clc, close all
 
-% Read model
+%% Read model
 
 readModel();
 
-% Read the data
+%% Read the data
 
-% readData();
+readData();
 
-% Estimate parameters
+%% Estimate parameters
 
-% estimateParams();
+estimateParams();
 
-% Plot impulse responses
+%% Plot impulse responses
 
 plotIRF();
 
-% Simulate scenarios
+%% Simulate scenarios
 
-% dbComp = simulateDelayedResponse(m);
+scenarios.simulateDelayedResponse();
 
-% Calculate unobserved variables
+%% Calculate unobserved variables
 
-% filterHistory();
+filterHistory();
 
-% Plot the filtration results
+%% Plot the filtration results
 
-% plotDecomp();
-% plotTrends();
-% plotShocks();
+plotDecomp();
+plotTrends();
+plotShocks();

@@ -1,7 +1,9 @@
 function plotTrends
 
-% Load the filter results
+% Get options
+opts = mainSettings();
 
+% Load the filter results
 tmp     = load("results/filter.mat");
 db      = tmp.dbFilt.mean;
 rngPlot = tmp.rngFilt;
@@ -59,41 +61,39 @@ utils.popaxes();
     
     c = c + 1;
     
-    red   = [1,0,0];
-    green = [0,1,0];
-    blue  = [0,0,1];
-    white = red + green + blue;
-    
     utils.subtightplot(2, numCol, c, 0.05, 0.05, 0.05)
     hold on
     
     if numAlt == 1
       
-      plot(rngPlot, actual{:,1}, 'color', red, 'linewidth', 1.5, ...
+      plot(rngPlot, actual{:,1}, 'color', opts.general.baseColorL, 'linewidth', 1.5, ...
         'linestyle', ':');
-      plot(rngPlot, trend{:,1}, 'color', blue, 'linewidth', 1);
+      plot(rngPlot, trend{:,1}, 'color', opts.general.baseColor, 'linewidth', 1);
       
       hl = legend(["Actual", "Trend"], "location", "best");
       
     else
       
-      if maxabs(actual{rngPlot,2} - actual{rngPlot,1}) < 1e-9
+      rngComp = rngPlot(2:end); % To correctly handle e.g. dl_s when l_s is observed
+      difi = maxabs(actual{rngComp,2} - actual{rngComp,1});
+      
+      if difi < 1e-9
         
-        plot(rngPlot, actual{:,1}, 'color', red, 'linewidth', 1.5, ...
+        plot(rngPlot, actual{:,1}, 'color', opts.general.baseColorL, 'linewidth', 1.5, ...
           'linestyle', ':');
-        plot(rngPlot, trend{:,1}, 'color', blue, 'linewidth', 1);
-        plot(rngPlot,  trend{:,2}, 'color', blue*3/8 + white*3/8 + green/4, 'linewidth', 1);
+        plot(rngPlot,  trend{:,1}, 'color', opts.general.baseColor,  'linewidth', 1);
+        plot(rngPlot,  trend{:,2}, 'color', opts.general.altColor,   'linewidth', 1);
         
         hl = legend(["Actual", "TrendBase", "TrendAlt"], "location", "best");
         
       else
         
-        plot(rngPlot, actual{:,1}, 'color', red, 'linewidth', 1.5, ...
+        plot(rngPlot, actual{:,1}, 'color', opts.general.baseColorL, 'linewidth', 1.5, ...
           'linestyle', ':');
-        plot(rngPlot, trend{:,1}, 'color', blue, 'linewidth', 1);
-        plot(rngPlot, actual{:,2}, 'color', red*3/8 + white*3/8 + green/4, 'linewidth', 1.5, ...
+        plot(rngPlot,  trend{:,1}, 'color', opts.general.baseColor,  'linewidth', 1);
+        plot(rngPlot, actual{:,2}, 'color', opts.general.altColorL,  'linewidth', 1.5, ...
         'linestyle', ':');
-        plot(rngPlot,  trend{:,2}, 'color', blue*3/8 + white*3/8 + green/4, 'linewidth', 1);
+        plot(rngPlot,  trend{:,2}, 'color', opts.general.altColor,   'linewidth', 1);
         
         hl = legend(["ActualBase", "TrendBase", "ActualAlt", "TrendAlt"], "location", "best");
         

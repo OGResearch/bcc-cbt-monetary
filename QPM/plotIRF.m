@@ -9,7 +9,6 @@ varNames    = opts.irf.varNames;
 rngIRF      = 0 : opts.irf.horizon;
 
 % Load the model
-
 tmp = load("results/model.mat");
 m   = tmp.m;
 
@@ -37,7 +36,12 @@ for j = 1 : numVars
     c = c + 1;
     ha = utils.subtightplot(numVars, numShocks, c, 0.05, 0.05, 0.05);
     
-    plot(rngIRF, ir.(varNames(j)){:, i, :}, '.-');
+    plot(rngIRF, ir.(varNames(j)){:, i, 1}, '.-', 'color', opts.general.baseColor);
+    if 1 < numAlt
+      hold on
+      plot(rngIRF, ir.(varNames(j)){:, i, 2}, '.-', 'color', opts.general.altColor);
+    end
+    
     grid on
     yline(0);
     

@@ -1,11 +1,9 @@
 function readData
 
 % Read the data from the CSV file
-
 db = databank.fromCSV("data/data_tunisia.csv");
 
 % Read GPM data
-
 dbGPM = databank.fromCSV("data/dataGPM.csv");
 
 % Process data
@@ -27,22 +25,7 @@ dbObs.obs_l_rp_oil_gap = hpf2(obs_l_rp_oil);
 obs_r_f = dbObs.obs_i_f - 4*diff(dbObs.obs_l_cpi_f);
 dbObs.obs_r_f_tnd = hpf(obs_r_f{qq(2000,1) : qq(2019,4)}, 'lambda', 1600*0.5);
 
-% Tune trends and gaps
-
-dbObs.obs_dl_cpi_tar = Series();
-dbObs.obs_dl_cpi_tar(qq(2000,1) : qq(2010,4)) = 3;
-dbObs.obs_dl_cpi_tar(qq(2011,1) : qq(2021,2)) = 4;
-
-% And exmaple of tuning the real exchange rate
-dbObs.obs_l_z_gap = Series();
-dbObs.obs_l_z_gap(qq(2002,1)) = -7;
-
-% Level shock for potential during Covid19
-dbObs.obs_shock_l_y_tnd = Series();
-dbObs.obs_shock_l_y_tnd(qq(2020, [1 2])) = [-5, -5];
-
 % Save the results
-
 save("results/data.mat", "db", "dbObs", "dbGPM");
 
 end
