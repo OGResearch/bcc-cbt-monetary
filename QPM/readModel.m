@@ -1,37 +1,64 @@
-function readModel
+%% Create and calibrate model object 
 
-% Porcess options
-opts        = mainSettings();
-steadyVars  = opts.model.steadyVars;
-altParams   = opts.model.altParams;
+%% Clear workspace 
 
-% Read model
-m = Model("model/qpm.model", "Linear", true, "Growth", false);
+close all
+clear
 
-% Set parameters, solve, and calculate the steady state
+if ~exist("mat", "dir")
+    mkdir mat
+end
 
-p = parameters.setParamBase();
+
+%% Read model files 
+
+% Basic QPM
+m = Model.fromFile( ...
+    ["model/qpm.model", "model/noCredit.model"] ...
+    , "linear", false ...
+    , "growth", true ...
+);
+
+% QPM with credit extension
+mx = Model.fromFile( ...
+    ["model/qpm.model", "model/credit.model"] ...
+    , "linear", false ...
+    , "growth", true ...
+);
+
+
+%% Assign parameters and solve model
+
+p = struct();
+p = parameters.baseline(p);
+
 m = assign(m, p);
-
-if ~isempty(altParams)
-  p = feval("parameters." + altParams);
-  tmp = assign(m, p);
-  m = [m, tmp];
-end
-
+m = steady(m);
 m = solve(m);
-m = sstate(m);
 
-% Save the model
-save("results/model.mat", "m");
+mx = assign(mx, p);
 
-% Display the steady state if required
 
-if ~isempty(steadyVars)
-  
-  t = table(m, ["SteadyLevels", "SteadyChange"]);
-  disp(t(steadyVars, :))
-  
-end
+mx.bc_to_ny = 0.70;
 
-end
+mx = steady( ...
+    mx ...
+    , "exogenize", "bc_to_ny" ...
+    , "endogenize", "c1_l_bc" ...
+);
+mx = solve(mx);
+
+
+%% Save the model to Matlab MAT file 
+
+save mat/readModel.mat m mx
+
+
+%% Tabularize steady state 
+
+t = table( ...
+    mx, ["steadyLevels", "steadyChange",  "Description"] ...
+    , "round", 8 ...
+    , "writeTable", "steady-state.xlsx" ...
+)
+

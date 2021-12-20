@@ -1,0 +1,14 @@
+!variables
+    cc_gap
+
+
+!parameters
+    c0_cc_gap
+
+
+!shocks
+    shock_cc_gap
+
+
+!equations
+    cc_gap = 0;

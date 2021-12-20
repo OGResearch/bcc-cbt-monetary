@@ -1,0 +1,69 @@
+!variables
+    "Log outstanding credit" l_bc
+    "Log outstanding credit, Q/Q PA" dl_bc
+    "Log new credit" l_bc_new
+    "Log nominal GDP" l_ny
+    "Log nominal GDP, Q/Q PA" dl_ny
+    "Log GDP deflator" l_py
+    "Log GDP deflator, Q/Q PA" dl_py
+    "Credit conditions gap" cc_gap
+    "Log ratio of outstanding credit to GDP, PA" l_bc_to_ny
+    "Trend in log ratio of outstanding credit to GDP, PA" l_bc_to_ny_tnd
+    "Trend in ratio of outstanding credit to GDP, PA" bc_to_ny_tnd
+    "Log ratio of new credit to GDP" l_bc_new_to_ny
+    "Ratio of outstanding credit to GDP, PA" bc_to_ny
+    "Ratio of new credit to GDP" bc_new_to_ny
+
+
+!parameters
+
+    "Credit repayment parameter" c1_l_bc
+    "New credit to GDP ratio" c1_l_bc_new
+    "Sensitivity of new credit to credit conditions" c2_l_bc_new
+
+    "Sensitivity of credit conditions to credit to GDP ratio" c1_cc_gap
+
+
+
+!shocks
+
+    "Shock to outstanding credit" shock_l_bc
+    "Shock to new credit" shock_l_bc_new
+    "Shock to credit conditions gap" shock_cc_gap
+
+    
+!equations
+    
+    "Stock-flow relationship for credit"
+    % bc = (1 - c1_bc) * bc{-1} + bc_new
+    exp(l_bc/100) = (1 - c1_l_bc)*exp(l_bc{-1}/100) + exp(l_bc_new/100 + shock_l_bc/100);
+    dl_bc = 4*diff(l_bc);
+
+    "Demand for new credit"
+    l_bc_new = ...
+        + 100*log(c1_l_bc_new) ...
+        - c2_l_bc_new * cc_gap ...
+        + l_ny + shock_l_bc_new ...
+    ;
+
+    "Identity for nominal GDP"
+    l_ny = l_y + l_py;
+    dl_ny = 4*diff(l_ny);
+
+    "GDP deflator equation"
+    dl_py = dl_cpi;
+
+    dl_py = 4*diff(l_py);
+
+    cc_gap = c1_cc_gap*100*(bc_to_ny - bc_to_ny_tnd) + shock_cc_gap;
+
+    l_bc_to_ny = l_bc - l_ny - 100*log(4);
+
+    l_bc_new_to_ny = l_bc_new - l_ny;
+
+    bc_to_ny = exp(l_bc_to_ny/100);
+    bc_new_to_ny = exp(l_bc_new_to_ny/100);
+
+    l_bc_to_ny_tnd = &l_bc_to_ny;
+    bc_to_ny_tnd = &bc_to_ny;
+
